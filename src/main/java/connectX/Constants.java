@@ -5,11 +5,11 @@ import javax.swing.filechooser.FileFilter;
 
 public final class Constants
 {
-    static final String projectName = "Camelot";
+    static final String projectName = "ConnectX";
     static double width;
     static double height;
-    static final int rows = 16;
-    static final int col = 12;
+    static final int rows = 9;
+    static final int col = 9;
     static boolean low;
     static final FileFilter cFileFilter;
     static final FileFilter cppFileFilter;
@@ -18,6 +18,28 @@ public final class Constants
     static final FileFilter javaFileFilter;
     static final FileFilter classFileFilter;
     static final FileFilter pythonFileFilter;
+    static final int[][] projectFrom={
+            {1,2,3,1,2,3,1,2,3},
+            {4,5,6,4,5,6,4,5,6},
+            {7,8,9,7,8,9,7,8,9},
+            {1,2,3,1,2,3,1,2,3},
+            {4,5,6,4,5,6,4,5,6},
+            {7,8,9,7,8,9,7,8,9},
+            {1,2,3,1,2,3,1,2,3},
+            {4,5,6,4,5,6,4,5,6},
+            {7,8,9,7,8,9,7,8,9}
+    } ;
+    static final int[][] projectTo={
+            {1,1,1,2,2,2,3,3,3},
+            {1,1,1,2,2,2,3,3,3},
+            {1,1,1,2,2,2,3,3,3},
+            {4,4,4,5,5,5,6,6,6},
+            {4,4,4,5,5,5,6,6,6},
+            {4,4,4,5,5,5,6,6,6},
+            {7,7,7,8,8,8,9,9,9},
+            {7,7,7,8,8,8,9,9,9},
+            {7,7,7,8,8,8,9,9,9}
+    };
 
     static {
         Constants.width = 1920.0;
@@ -34,20 +56,26 @@ public final class Constants
 
     public enum Player
     {
-        BLACK,
-        WHITE;
+        P1(1),
+        P2(2);
+
+        private int value;
+
+        private Player(final int value) {
+            this.value = value;
+        }
+
+        public int getValue() {
+            return this.value;
+        }
     }
 
     public enum State
     {
         EMPTY(0),
-        WHITEMEN(1),
-        WHITEHORSE(2),
-        WHITECASTLE(3),
-        BLACKMEN(4),
-        BLACKHORSE(5),
-        BLACKCASTLE(6),
-        BLOCKED(-1);
+        P1(1),
+        P2(2);
+
 
         private int value;
 
@@ -60,11 +88,5 @@ public final class Constants
         }
     }
 
-    public enum MoveType
-    {
-        PLAIN,
-        SACRIFICE,
-        INVALID;
-    }
 }
 

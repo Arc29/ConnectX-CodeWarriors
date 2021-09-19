@@ -1,0 +1,100 @@
+.line {
+    -fx-border-width: 0px;
+    -fx-border-insets: 0px;
+}
+
+.separator {
+    -fx-padding: 0px;
+    -fx-border-width: 1px;
+    -fx-border-color: blue;
+    -fx-background-color: black;
+    -fx-border-radius: 50;
+    -fx-background-radius: 50;
+}
+
+.separator:horizontal{
+    -fx-pref-height: 10;
+}
+
+.separator:vertical{
+    -fx-pref-width: 10;
+}
+
+.jfx-text-field{
+    -fx-padding: 0px;
+    -fx-border-width: 1px;
+    -fx-border-insets: 1px;
+    -fx-border-color: blue;
+    -fx-background-color: #111111;
+    -fx-border-radius: 50;
+    -fx-background-radius: 50;
+    -fx-text-fill: white;
+    -fx-font-family: 'Press Start 2P Regular';
+    -fx-font-size: 10;
+}
+
+.label{
+    -fx-font-family: 'Press Start 2P Regular';
+}
+
+.jfx-combo-box{
+    -fx-padding: 0px;
+    -fx-border-width: 1px;
+    -fx-border-insets: 1px;
+    -fx-border-color: blue;
+    -fx-background-color: #111111;
+    -fx-border-radius: 50;
+    -fx-background-radius: 50;
+    -fx-font-family: 'Press Start 2P Regular';
+    -fx-font-size: 10;
+    -fx-text-alignment: center;
+}
+
+.jfx-combo-box .cell{
+    -fx-text-fill: #3377ee;
+    -fx-background-color: #111111;
+    -fx-alignment: center;
+
+}
+
+.jfx-combo-box .cell:hover {
+    -fx-background-color: #d81b60
+}
+
+.jfx-button{
+    -fx-border-width: 1px;
+    -fx-border-insets: 1px;
+    -fx-border-color: blue;
+    -fx-background-color: #2f2f2f;
+    -fx-border-radius: 50;
+    -fx-background-radius: 50;
+    -fx-text-fill: #3377ee;
+    -fx-font-family: 'Press Start 2P Regular';
+}
+
+.list-view{
+    -fx-background-color: #111111;
+}
+
+.jfx-snackbar-content {
+    -fx-background-color: #111111;
+}
+.jfx-snackbar-toast {
+    -fx-text-fill: #3377ee;
+    -fx-font-size: 10;
+    -fx-font-family: 'Press Start 2P Regular';
+}
+
+.game-grid-cell {
+    -fx-background-color: blue,black,blue,black;
+    -fx-background-insets: 0, 0 0.8 0.8 0, 0 1.8 1.8 0, 0 2.6 2.6 0 ;
+}
+.game-grid-cell.first-row {
+    -fx-background-insets: 0, 0.8 0.8 0.8 0, 1.8 1.8 1.8 0, 2.6 2.6 2.6 0 ;
+}
+.game-grid-cell.first-column {
+    -fx-background-insets: 0, 0 0.8 0.8 0.8, 0 1.8 1.8 1.8, 0 2.6 2.6 2.6 ;
+}
+.game-grid-cell.first-row.first-column {
+    -fx-background-insets: 0,0.8,1.8,2.6;
+}

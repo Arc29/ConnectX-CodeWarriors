@@ -5,6 +5,7 @@ public class Players
     private int id;
     String player1File;
     String player2File;
+    int xValue;
     int player1AllowedTime;
     int player2AllowedTime;
     int sleepTime;
@@ -16,6 +17,7 @@ public class Players
         this.player1AllowedTime = 1;
         this.player2AllowedTime = 1;
         this.sleepTime = 1;
+        this.xValue = 4;
         this.player1Ready = false;
         this.player2Ready = false;
     }

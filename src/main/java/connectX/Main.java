@@ -54,7 +54,9 @@ public class Main extends Application
 
         primaryStage.setTitle("ConnectX");
         primaryStage.initStyle(StageStyle.UNDECORATED);
-        primaryStage.setScene(new Scene(root));
+        Scene scene=new Scene(root);
+        scene.getStylesheets().add("/css/App.css");
+        primaryStage.setScene(scene);
         primaryStage.setResizable(false);
         primaryStage.show();
     }
