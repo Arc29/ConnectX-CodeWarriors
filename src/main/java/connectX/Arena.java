@@ -5,16 +5,20 @@ import java.net.URL;
 
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXListView;
-import javafx.animation.Interpolator;
-import javafx.animation.KeyFrame;
-import javafx.animation.KeyValue;
-import javafx.animation.Timeline;
+import javafx.animation.*;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
 import javafx.scene.input.KeyCode;
@@ -66,6 +70,8 @@ public class Arena implements Initializable
     private ImageView[][] boardStackPanes;
     @FXML
     private JFXCheckBox gridCheckBox;
+    @FXML
+    private Canvas gameCanvas;
 
     public Arena() {
 
@@ -99,11 +105,11 @@ public class Arena implements Initializable
     @FXML
     void start(final ActionEvent event) {
         if (!Players.getPlayers().player1Ready) {
-            this.log("Green team isn't ready");
+            this.log("P1 isn't ready");
             return;
         }
         if (!Players.getPlayers().player2Ready) {
-            this.log("Blue team isn't ready");
+            this.log("P2 isn't ready");
             return;
         }
         if (Main.paused) {
@@ -207,6 +213,19 @@ public class Arena implements Initializable
     public void initialize(final URL location, final ResourceBundle resources) {
 //        Pane pane=(Pane)(this.gameGrid.getChildren().get(9*5+4));
 //        ((ImageView)(pane.getChildren().get(0))).setImage(new Image(getClass().getResourceAsStream("/images/p1.gif")));
+//        Animation animation=createPathAnimation(0,0,3,1,Color.RED);
+//        animation.play();
+//        animation.setOnFinished(new EventHandler<ActionEvent>() {
+//            @Override
+//            public void handle(ActionEvent event) {
+//                clearCanvas();
+//            }
+//        });
+    }
+
+    void clearCanvas(){
+        GraphicsContext gc = gameCanvas.getGraphicsContext2D();
+        gc.clearRect(0,0,gameCanvas.getWidth(), gameCanvas.getHeight());
     }
 
     void clearBoard() {
@@ -216,8 +235,71 @@ public class Arena implements Initializable
                     this.updateBoard(i, j, Constants.State.EMPTY);
                 }
             }
-             this.historyListView.getItems().clear();
             this.logListView.getItems().clear();
+            this.clearCanvas();
         });
     }
+    private Animation createPathAnimation(int xi,int yi,int xj,int yj,Color col) {
+
+        GraphicsContext gc = gameCanvas.getGraphicsContext2D();
+
+        // move a node along a path. we want its position
+        Circle pen = new Circle(0, 0, 16);
+
+        // create path transition
+        TranslateTransition pathTransition = new TranslateTransition(Duration.seconds(3),pen);
+        pathTransition.setFromX(62+yi*125);
+        pathTransition.setFromY(43+xi*86);
+        pathTransition.setToX(62+yj*125);
+        pathTransition.setToY(43+xj*86);
+        pathTransition.currentTimeProperty().addListener( new ChangeListener<Duration>() {
+
+            Location oldLocation = null;
+
+            /**
+             * Draw a line from the old location to the new location
+             */
+            @Override
+            public void changed(ObservableValue<? extends Duration> observable, Duration oldValue, Duration newValue) {
+
+                // skip starting at 0/0
+                if( oldValue == Duration.ZERO)
+                    return;
+
+                // get current location
+                double x = pen.getTranslateX();
+                double y = pen.getTranslateY();
+
+                // initialize the location
+                if( oldLocation == null) {
+                    oldLocation = new Location();
+                    oldLocation.x = x;
+                    oldLocation.y = y;
+                    return;
+                }
+
+                // draw line
+                gc.setStroke(col);
+                gc.setFill(Color.YELLOW);
+                gc.setLineWidth(16);
+                gc.strokeLine(oldLocation.x, oldLocation.y, x, y);
+
+                // update old location with current one
+                oldLocation.x = x;
+                oldLocation.y = y;
+            }
+        });
+
+        return pathTransition;
+    }
+    static class Location {
+        double x;
+        double y;
+    }
+
+    public void playerWin(int player,int xi,int yi,int xj,int yj){
+        Animation animation=createPathAnimation(xi,yi,xj,yj,(player== 1)?Color.RED:Color.BLUE);
+        animation.play();
+    }
+
 }

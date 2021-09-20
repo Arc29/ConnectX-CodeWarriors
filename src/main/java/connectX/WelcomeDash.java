@@ -63,7 +63,7 @@ public class WelcomeDash implements Initializable {
         else if (Constants.javaFileFilter.accept(file)) {
             command = "javac " + file.getAbsolutePath();
             compiledFileName = file.getName().substring(0, file.getName().indexOf(".java")) + ".class";
-            this.updateTimeForJava(playerId);
+            this.updateTime(playerId,false);
         }
         if (!command.equals("")) {
             try {
@@ -97,16 +97,24 @@ public class WelcomeDash implements Initializable {
             return false;
         }
         if (Constants.classFileFilter.accept(file)||Constants.pythonFileFilter.accept(file)) {
-            this.updateTimeForJava(playerId);
+            this.updateTime(playerId,Constants.pythonFileFilter.accept(file));
         }
         if (Constants.outFileFilter.accept(file) || Constants.classFileFilter.accept(file) || Constants.pythonFileFilter.accept(file)) {
             if (playerId == 1) {
                 Players.getPlayers().player1Ready = true;
+                if(Constants.classFileFilter.accept(file))
+                    Players.getPlayers().player1Type = 1;
+                if(Constants.pythonFileFilter.accept(file))
+                    Players.getPlayers().player1Type = 2;
                 Players.getPlayers().player1File = file.getAbsolutePath();
                 p1File.setText(Players.getPlayers().player1File);
             }
             else if (playerId == 0) {
                 Players.getPlayers().player2Ready = true;
+                if(Constants.classFileFilter.accept(file))
+                    Players.getPlayers().player2Type = 1;
+                if(Constants.pythonFileFilter.accept(file))
+                    Players.getPlayers().player2Type = 2;
                 Players.getPlayers().player2File = file.getAbsolutePath();
                 p2File.setText(Players.getPlayers().player2File);
             }
@@ -116,12 +124,15 @@ public class WelcomeDash implements Initializable {
         return false;
     }
 
-    void updateTimeForJava(final int playerId) {
+    void updateTime(final int playerId, final boolean isPython) {
         if (playerId == 1) {
             try {
                 final int time = Integer.parseInt(this.moveTextField.getText());
                 if (time > 0) {
+                    if(!isPython)
                     Players.getPlayers().player1AllowedTime = 2 * time;
+                    else
+                        Players.getPlayers().player1AllowedTime = 3 * time;
                     this.log("Move time Updated for P1");
                 }
                 else {
@@ -136,7 +147,10 @@ public class WelcomeDash implements Initializable {
             try {
                 final int time = Integer.parseInt(this.moveTextField.getText());
                 if (time > 0) {
-                    Players.getPlayers().player2AllowedTime = 2 * time;
+                    if(!isPython)
+                        Players.getPlayers().player2AllowedTime = 2 * time;
+                    else
+                        Players.getPlayers().player2AllowedTime = 3 * time;
                     this.log("Move time Updated for P2");
                 }
                 else {
@@ -168,7 +182,12 @@ public class WelcomeDash implements Initializable {
             }
             else if (Constants.exeFileFilter.accept(file) || Constants.classFileFilter.accept(file) || Constants.pythonFileFilter.accept(file)) {
                 if (Constants.classFileFilter.accept(file)) {
-                    this.updateTimeForJava(1);
+                    this.updateTime(1,false);
+                    Players.getPlayers().player1Type=1;
+                }
+                else if (Constants.pythonFileFilter.accept(file)) {
+                    this.updateTime(1,true);
+                    Players.getPlayers().player1Type=2;
                 }
                 Players.getPlayers().player1Ready = true;
                 try {
@@ -206,7 +225,12 @@ public class WelcomeDash implements Initializable {
             }
             else if (Constants.exeFileFilter.accept(file) || Constants.classFileFilter.accept(file)||Constants.pythonFileFilter.accept(file)) {
                 if (Constants.classFileFilter.accept(file)) {
-                    this.updateTimeForJava(0);
+                    this.updateTime(0,false);
+                    Players.getPlayers().player1Type=1;
+                }
+                else if (Constants.pythonFileFilter.accept(file)) {
+                    this.updateTime(0,true);
+                    Players.getPlayers().player1Type=2;
                 }
                 Players.getPlayers().player2Ready = true;
                 try {
@@ -234,6 +258,10 @@ public class WelcomeDash implements Initializable {
             if (time > 0) {
 
                 Players.getPlayers().player1AllowedTime = Players.getPlayers().player2AllowedTime = time;
+                if(Players.getPlayers().player1File!=null && Players.getPlayers().player1Type!=0)
+                    updateTime(1,Players.getPlayers().player1Type==2);
+                if(Players.getPlayers().player2File!=null && Players.getPlayers().player2Type!=0)
+                    updateTime(0,Players.getPlayers().player2Type==2);
                 this.log("Move time Updated");
             }
             else {

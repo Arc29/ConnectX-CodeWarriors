@@ -4,6 +4,7 @@
 <?import com.jfoenix.controls.JFXListView?>
 <?import java.lang.String?>
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.canvas.Canvas?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
@@ -587,6 +588,7 @@
                   </Pane>
                </children>
             </GridPane>
+            <Canvas fx:id="gameCanvas" height="774.0" width="1121.0" />
          </children></StackPane>
 
    </children>

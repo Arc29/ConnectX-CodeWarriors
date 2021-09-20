@@ -8,10 +8,12 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.InputMismatchException;
 import java.util.Scanner;
+import java.util.StringTokenizer;
 import java.util.concurrent.TimeUnit;
 
 public class Game implements Runnable{
     private Constants.State[][] board;
+    private boolean[] filledLocal;
     private int rows,cols;
     private Constants.Player prevPlayer;
     private int preMoveX,preMoveY;
@@ -20,6 +22,9 @@ public class Game implements Runnable{
 
     public Game(final Arena controller,Constants.Player start){
         this.board=new Constants.State[9][9];
+        this.filledLocal=new boolean[9];
+        for(int i=0;i<9;i++)
+            filledLocal[i]=false;
         this.rows=9;
         this.cols=9;
         this.start=start;
@@ -48,6 +53,14 @@ public class Game implements Runnable{
         int validBlock=5;
         if(xi!=-1 || yi!=-1)
         validBlock=Constants.projectFrom[xi][yi];
+        if(this.filledLocal[validBlock-1]){
+            for(int i=0;i<9;i++){
+                if(!this.filledLocal[i]){
+                    validBlock=i+1;
+                    break;
+                }
+            }
+        }
 
             if (player == Constants.Player.P1) {
                 if(this.board[xj][yj]!= Constants.State.EMPTY)
@@ -94,7 +107,7 @@ public class Game implements Runnable{
                 break;
         }
                 if(cnt==Players.getPlayers().xValue)
-                    return new Pair<>(true, player.name()+" wins with match from ("+x+","+a+") to ("+x+","+b+")!");
+                    return new Pair<>(true, player.getValue()+" "+x+" "+a+" "+x+" "+b);
 
 
         //Check if X connected in vertical
@@ -120,7 +133,7 @@ public class Game implements Runnable{
                 break;
         }
         if(cnt==Players.getPlayers().xValue)
-            return new Pair<>(true, player.name()+" wins with match from ("+x+","+a+") to ("+x+","+b+")!");
+            return new Pair<>(true, player.getValue()+" "+a+" "+y+" "+b+" "+y);
 
         //Check X connected in increasing diagonal
         cnt=1;a=x;b=x;
@@ -148,7 +161,7 @@ public class Game implements Runnable{
                 break;
         }
         if(cnt==Players.getPlayers().xValue)
-            return new Pair<>(true, player.name()+" wins with match from ("+a+","+c+") to ("+b+","+d+")!");
+            return new Pair<>(true, player.getValue()+" "+a+" "+c+" "+b+" "+d);
         //Check X connected in decreasing diagonal
         cnt=1;a=x;b=x;c=y;d=y;
         for(int i=x-1,j=y+1;i>=0&&j<9;i--,j++) {
@@ -174,7 +187,7 @@ public class Game implements Runnable{
                 break;
         }
         if(cnt==Players.getPlayers().xValue)
-            return new Pair<>(true, player.name()+" wins with match from ("+a+","+c+") to ("+b+","+d+")!");
+            return new Pair<>(true, player.getValue()+" "+a+" "+c+" "+b+" "+d);
         if(checkBoardFull())
             return new Pair<>(true, "Draw!");
         return new Pair<>(false, "Not terminal state");
@@ -388,9 +401,9 @@ public class Game implements Runnable{
                 }
                 writer.write(this.prevPlayer.getValue()+" "+this.preMoveX+" "+this.preMoveY+"\n");
                 writer.flush();
-                System.out.println(((long)Players.getPlayers().player1AllowedTime*10));
-                System.out.println(((long)Players.getPlayers().player2AllowedTime*10));
-                if (proc.waitFor((currentPlayer == Constants.Player.P1) ? ((long)Players.getPlayers().player1AllowedTime*10) : ((long)Players.getPlayers().player2AllowedTime*10), TimeUnit.SECONDS)) {
+                System.out.println(((long)Players.getPlayers().player1AllowedTime));
+                System.out.println(((long)Players.getPlayers().player2AllowedTime));
+                if (proc.waitFor((currentPlayer == Constants.Player.P1) ? ((long)Players.getPlayers().player1AllowedTime) : ((long)Players.getPlayers().player2AllowedTime), TimeUnit.SECONDS)) {
                     System.out.println(proc.exitValue());
                     final Scanner output = new Scanner(proc.getInputStream());
                     final Scanner erroutput = new Scanner(proc.getErrorStream());
@@ -443,7 +456,7 @@ public class Game implements Runnable{
                             this.controller.updateBoard(xi, yi, this.board[xi][yi]);
                             this.controller.log(currentPlayer.name()+" at ("+xi+","+yi+")");
 
-
+                        updateFilledBoards(xi,yi);
                         final Pair<Boolean,String> p=this.checkTerminalState(currentPlayer,xi,yi);
                         if (currentPlayer == Constants.Player.P1) {
                             currentPlayer = Constants.Player.P2;
@@ -460,7 +473,14 @@ public class Game implements Runnable{
                             continue;
                         }
                         else{
-                            this.controller.log(p.getValue());  //Win
+                            StringTokenizer st=new StringTokenizer(p.getValue());
+                            int ply=Integer.parseInt(st.nextToken());
+                            int x1=Integer.parseInt(st.nextToken());
+                            int y1=Integer.parseInt(st.nextToken());
+                            int x2=Integer.parseInt(st.nextToken());
+                            int y2=Integer.parseInt(st.nextToken());
+                            this.controller.log("P"+ply+" wins with match from ("+x1+","+y1+") to ("+x2+","+y2+")!");  //Win
+                            this.controller.playerWin(ply,x1,y1,x2,y2);
                             break;
                         }
                     }
@@ -481,6 +501,18 @@ public class Game implements Runnable{
             break;
         }
     }
+
+    private void updateFilledBoards(int xi, int yi) {
+        int blk=Constants.projectTo[xi][yi];
+        for(int i=0;i<9;i++){
+            for(int j=0;j<9;j++){
+                if(Constants.projectTo[i][j]==blk && this.board[i][j]== Constants.State.EMPTY)
+                    return;
+            }
+        }
+        this.filledLocal[blk-1]=true;
+    }
+
     public void prepareBoard(){
         for(int i=0;i<this.rows;i++){
             for(int j=0;j<this.cols;j++)
