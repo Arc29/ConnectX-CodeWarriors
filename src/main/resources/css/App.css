@@ -72,6 +72,17 @@
     -fx-font-family: 'Press Start 2P Regular';
 }
 
+.exit-button{
+    -fx-border-width: 1px;
+    -fx-border-insets: 1px;
+    -fx-border-color: red;
+    -fx-background-color: #2f2f2f;
+    -fx-border-radius: 50;
+    -fx-background-radius: 50;
+    -fx-text-fill: red;
+    -fx-font-family: 'Press Start 2P Regular';
+}
+
 .list-view{
     -fx-background-color: #111111;
 }

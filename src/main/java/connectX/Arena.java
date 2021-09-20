@@ -199,13 +199,13 @@ public class Arena implements Initializable
 
 
     @FXML
-    void close(final MouseEvent event) {
+    void close(final ActionEvent event) {
         final Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
         window.close();
     }
 
     @FXML
-    void minimize(final MouseEvent event) {
+    void minimize(final ActionEvent event) {
         final Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
         window.toBack();
     }

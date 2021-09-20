@@ -57,7 +57,7 @@
             </JFXButton>
          </children>
       </AnchorPane>
-      <AnchorPane layoutX="1532.0" layoutY="-2.0" maxHeight="1.7976931348623157E308" prefHeight="1040.0" prefWidth="382.0">
+      <AnchorPane layoutX="1532.0" layoutY="99.0" maxHeight="1.7976931348623157E308" prefHeight="939.0" prefWidth="551.0">
          <children>
             <Pane layoutX="28.0" layoutY="32.0" prefHeight="104.0" prefWidth="342.0">
                <children>
@@ -590,6 +590,16 @@
             </GridPane>
             <Canvas fx:id="gameCanvas" height="774.0" width="1121.0" />
          </children></StackPane>
+      <JFXButton fx:id="close" alignment="CENTER" contentDisplay="CENTER" layoutX="1808.0" layoutY="28.0" onAction="#close" prefHeight="50.0" prefWidth="50.0" ripplerFill="#3377ee" styleClass="exit-button" text="X" textAlignment="CENTER" textFill="WHITE">
+         <font>
+            <Font size="24.0" />
+         </font>
+      </JFXButton>
+      <JFXButton alignment="CENTER" contentDisplay="CENTER" layoutX="1701.0" layoutY="28.0" onAction="#minimize" prefHeight="50.0" prefWidth="50.0" ripplerFill="#3377ee" text="_" textAlignment="CENTER" textFill="WHITE">
+         <font>
+            <Font size="24.0" />
+         </font>
+      </JFXButton>
 
    </children>
 </Pane>
