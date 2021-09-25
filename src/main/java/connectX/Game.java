@@ -20,14 +20,14 @@ public class Game implements Runnable{
     private Constants.Player start;
     private final Arena controller;
 
-    public Game(final Arena controller,Constants.Player start){
+    public Game(final Arena controller,int round){
         this.board=new Constants.State[9][9];
         this.filledLocal=new boolean[9];
         for(int i=0;i<9;i++)
             filledLocal[i]=false;
         this.rows=9;
         this.cols=9;
-        this.start=start;
+        this.start=round==1? Constants.Player.P1: Constants.Player.P2;
         this.controller=controller;
         this.prevPlayer=Constants.Player.P2;
         this.preMoveX=this.preMoveY=-1;
@@ -106,7 +106,7 @@ public class Game implements Runnable{
             else
                 break;
         }
-                if(cnt==Players.getPlayers().xValue)
+                if(cnt>=Players.getPlayers().xValue)
                     return new Pair<>(true, player.getValue()+" "+x+" "+a+" "+x+" "+b);
 
 
@@ -132,7 +132,7 @@ public class Game implements Runnable{
             else
                 break;
         }
-        if(cnt==Players.getPlayers().xValue)
+        if(cnt>=Players.getPlayers().xValue)
             return new Pair<>(true, player.getValue()+" "+a+" "+y+" "+b+" "+y);
 
         //Check X connected in increasing diagonal
@@ -160,7 +160,7 @@ public class Game implements Runnable{
             else
                 break;
         }
-        if(cnt==Players.getPlayers().xValue)
+        if(cnt>=Players.getPlayers().xValue)
             return new Pair<>(true, player.getValue()+" "+a+" "+c+" "+b+" "+d);
         //Check X connected in decreasing diagonal
         cnt=1;a=x;b=x;c=y;d=y;
@@ -186,7 +186,7 @@ public class Game implements Runnable{
             else
                 break;
         }
-        if(cnt==Players.getPlayers().xValue)
+        if(cnt>=Players.getPlayers().xValue)
             return new Pair<>(true, player.getValue()+" "+a+" "+c+" "+b+" "+d);
         if(checkBoardFull())
             return new Pair<>(true, "Draw!");
@@ -389,7 +389,9 @@ public class Game implements Runnable{
                 final Process proc = runtime.exec(command, null, file.getParentFile());
                 final BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(proc.getOutputStream()));
                 writer.write(Players.getPlayers().xValue+"\n");
+                System.out.println(Players.getPlayers().xValue);
                 writer.write(this.rows+" "+this.cols+"\n");
+                System.out.println(this.rows+" "+this.cols);
                 for (int i = 0; i < this.rows; ++i) {
                     for (int j = 0; j < this.cols; ++j) {
                         System.out.print(this.board[i][j].getValue() + " ");
@@ -399,10 +401,11 @@ public class Game implements Runnable{
                     System.out.println();
                     writer.write("\n");
                 }
+                System.out.println(this.prevPlayer.getValue()+" "+this.preMoveX+" "+this.preMoveY);
                 writer.write(this.prevPlayer.getValue()+" "+this.preMoveX+" "+this.preMoveY+"\n");
                 writer.flush();
-                System.out.println(((long)Players.getPlayers().player1AllowedTime));
-                System.out.println(((long)Players.getPlayers().player2AllowedTime));
+//                System.out.println(((long)Players.getPlayers().player1AllowedTime));
+//                System.out.println(((long)Players.getPlayers().player2AllowedTime));
                 if (proc.waitFor((currentPlayer == Constants.Player.P1) ? ((long)Players.getPlayers().player1AllowedTime) : ((long)Players.getPlayers().player2AllowedTime), TimeUnit.SECONDS)) {
                     System.out.println(proc.exitValue());
                     final Scanner output = new Scanner(proc.getInputStream());
@@ -422,10 +425,18 @@ public class Game implements Runnable{
                         if (currentPlayer == Constants.Player.P1) {
                             this.controller.log("Illegal Move by P1. (" + xi + "," + yi + "). Maybe wrong output format");
                             this.controller.log("P2 won the game !!!"); //Win
+                            if(this.start== Constants.Player.P1)
+                                this.controller.setRound1Draw(new Pair<>(0,10),2);
+                            else
+                                this.controller.setRound2Draw(new Pair<>(0,10),2);
                         }
                         if (currentPlayer == Constants.Player.P2) {
                             this.controller.log("Illegal Move by P2, (" + xi + "," + yi + "). Maybe wrong output format");
                             this.controller.log("P1 won the game !!!"); //Win
+                            if(this.start== Constants.Player.P1)
+                                this.controller.setRound1Draw(new Pair<>(10,0),1);
+                            else
+                                this.controller.setRound2Draw(new Pair<>(10,0),1);
                         }
                         break;
                     }
@@ -440,6 +451,10 @@ public class Game implements Runnable{
                                 this.controller.log("Illegal Move by P1. (" + xi + "," + yi + ")");
                             }
                             this.controller.log("P2 won the game !!!"); //Win
+                            if(this.start== Constants.Player.P1)
+                                this.controller.setRound1Draw(new Pair<>(0,10),2);
+                            else
+                                this.controller.setRound2Draw(new Pair<>(0,10),2);
                         }
                         if (currentPlayer == Constants.Player.P2) {
                             if (xi == -10 && yi == -10) {
@@ -449,6 +464,10 @@ public class Game implements Runnable{
                                 this.controller.log("Illegal Move by P2. (" + xi + "," + yi + ")");
                             }
                             this.controller.log("P1 won the game !!!"); //Win
+                            if(this.start== Constants.Player.P1)
+                                this.controller.setRound1Draw(new Pair<>(10,0),1);
+                            else
+                                this.controller.setRound2Draw(new Pair<>(10,0),1);
                         }
                     }
                     else {
@@ -473,14 +492,27 @@ public class Game implements Runnable{
                             continue;
                         }
                         else{
-                            StringTokenizer st=new StringTokenizer(p.getValue());
-                            int ply=Integer.parseInt(st.nextToken());
-                            int x1=Integer.parseInt(st.nextToken());
-                            int y1=Integer.parseInt(st.nextToken());
-                            int x2=Integer.parseInt(st.nextToken());
-                            int y2=Integer.parseInt(st.nextToken());
-                            this.controller.log("P"+ply+" wins with match from ("+x1+","+y1+") to ("+x2+","+y2+")!");  //Win
-                            this.controller.playerWin(ply,x1,y1,x2,y2);
+                            if(p.getValue().equals("Draw!")){
+                                this.controller.log(p.getValue());
+                                if(this.start== Constants.Player.P1)
+                                    this.controller.setRound1Draw(getSubXScores(Players.getPlayers().xValue-1),3);
+                                else
+                                    this.controller.setRound2Draw(getSubXScores(Players.getPlayers().xValue-1),3);
+                            }
+                            else {
+                                StringTokenizer st = new StringTokenizer(p.getValue());
+                                int ply = Integer.parseInt(st.nextToken());
+                                int x1 = Integer.parseInt(st.nextToken());
+                                int y1 = Integer.parseInt(st.nextToken());
+                                int x2 = Integer.parseInt(st.nextToken());
+                                int y2 = Integer.parseInt(st.nextToken());
+                                this.controller.log("P" + ply + " wins with match from (" + x1 + "," + y1 + ") to (" + x2 + "," + y2 + ")!");  //Win
+                                this.controller.playerWin(ply, x1, y1, x2, y2);
+                                if(this.start== Constants.Player.P1)
+                                    this.controller.setRound1Draw(getSubXScores(Players.getPlayers().xValue-1),ply);
+                                else
+                                    this.controller.setRound2Draw(getSubXScores(Players.getPlayers().xValue-1),ply);
+                            }
                             break;
                         }
                     }
@@ -488,9 +520,17 @@ public class Game implements Runnable{
                 else {
                     if (currentPlayer == Constants.Player.P1) {
                         this.controller.log("Time Limit Exceeded for P1. P2 won the game !!!"); //Win
+                        if(this.start== Constants.Player.P1)
+                            this.controller.setRound1Draw(new Pair<>(0,10),2);
+                        else
+                            this.controller.setRound2Draw(new Pair<>(0,10),2);
                     }
                     if (currentPlayer == Constants.Player.P2) {
                         this.controller.log("Time Limit Exceeded for P2. P1 won the game !!!"); //Win
+                        if(this.start== Constants.Player.P1)
+                            this.controller.setRound1Draw(new Pair<>(10,0),1);
+                        else
+                            this.controller.setRound2Draw(new Pair<>(10,0),1);
                     }
                 }
             }

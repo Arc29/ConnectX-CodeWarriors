@@ -5,7 +5,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane fx:id="rootPane" maxHeight="600.0" maxWidth="510.0" opacity="0.8" prefHeight="405.0" prefWidth="510.0" style="-fx-background-color: #373737; -fx-border-radius: 20; -fx-background-radius: 20;" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="connectX.WelcomeDash">
+<AnchorPane fx:id="rootPane" maxHeight="600.0" maxWidth="510.0" opacity="0.8" prefHeight="405.0" prefWidth="510.0" style="-fx-background-color: #373737; -fx-border-radius: 20; -fx-background-radius: 20;" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="connectX.RoundEndDialog">
    <children>
       <Label alignment="CENTER" layoutX="117.0" layoutY="43.0" prefHeight="33.0" prefWidth="92.0" text="Round" textFill="#3377ff">
          <font>
@@ -24,7 +24,7 @@
       </Label>
       <Label layoutX="68.0" layoutY="125.0" prefHeight="33.0" prefWidth="219.0" text="Current Score :" textFill="WHITE">
          <font>
-            <Font size="16.0" />
+            <Font size="11.0" />
          </font>
       </Label>
       <Label fx:id="p1Score" alignment="CENTER" layoutX="293.0" layoutY="125.0" prefHeight="33.0" prefWidth="49.0" text="X" textFill="#ff366b">
@@ -48,5 +48,10 @@
          </font>
       </Label>
       <JFXButton fx:id="noBtn" layoutX="306.0" layoutY="321.0" onAction="#onNo" prefHeight="22.0" prefWidth="79.0" ripplerFill="#3377ee" text="No" textFill="WHITE" />
+      <Label fx:id="drawResScore" alignment="CENTER" layoutX="22.0" layoutY="158.0" prefHeight="50.0" prefWidth="467.0" text="X" textFill="WHITE" wrapText="true">
+         <font>
+            <Font size="8.0" />
+         </font>
+      </Label>
    </children>
 </AnchorPane>

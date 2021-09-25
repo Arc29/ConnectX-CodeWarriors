@@ -8,40 +8,31 @@ import com.jfoenix.controls.JFXListView;
 import javafx.animation.*;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.ListCell;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
-import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
-import javafx.scene.input.KeyCode;
 import javafx.scene.image.Image;
-import java.util.Random;
-import javafx.scene.control.Label;
 import javafx.application.Platform;
-import javafx.scene.input.KeyEvent;
 import javafx.event.ActionEvent;
 import java.io.IOException;
-import java.util.Scanner;
-import javafx.stage.FileChooser;
-import java.io.File;
-import javafx.scene.input.MouseEvent;
+
 import com.jfoenix.controls.JFXCheckBox;
 import javafx.scene.layout.GridPane;
 import javafx.scene.control.ListView;
-import javafx.scene.control.TextField;
-import javafx.scene.control.Button;
 import javafx.fxml.FXML;
 import javafx.scene.image.ImageView;
 import javafx.fxml.Initializable;
+import javafx.util.Callback;
 import javafx.util.Duration;
+import javafx.util.Pair;
 
 public class Arena implements Initializable
 {
@@ -62,8 +53,6 @@ public class Arena implements Initializable
     private JFXButton stopButton;
 
     @FXML
-    private ListView historyListView;
-    @FXML
     private JFXListView<String> logListView;
     @FXML
     private GridPane gameGrid;
@@ -73,8 +62,16 @@ public class Arena implements Initializable
     @FXML
     private Canvas gameCanvas;
 
+    private int round;
+    private Pair<Integer,Integer> round1Draw, round2Draw;
+    private int p1Score,p2Score;
+
     public Arena() {
 
+        this.round = 1;
+        this.p1Score=this.p2Score=0;
+        this.round1Draw=new Pair<>(0,0);
+        this.round2Draw=new Pair<>(0,0);
     }
 
     @FXML
@@ -100,6 +97,51 @@ public class Arena implements Initializable
         timeline.play();
     }
 
+    void slideConf(int winStat) throws IOException{
+        FXMLLoader loader=new FXMLLoader(getClass().getResource("/fxml/roundEndDialog.fxml"));
+        Parent root= loader.load();
+        RoundEndDialog dash= loader.getController();
+        dash.setRound(String.valueOf(this.round));
+        dash.setP1Score(String.valueOf(this.p1Score));
+        dash.setP2Score(String.valueOf(this.p2Score));
+        dash.setArena(this);
+        if(this.round==1)
+            dash.setPromptTxt(winStat,1);
+        else{
+            if(this.p1Score==this.p2Score) {
+                dash.setPromptTxt(winStat, 2);
+                dash.setStatus(1);
+            }
+            else if(this.p1Score>this.p2Score) {
+                dash.setPromptTxt(winStat, 3);
+                dash.setStatus(2);
+            }
+            else {
+                dash.setPromptTxt(winStat, 4);
+                dash.setStatus(2);
+            }
+        }
+        root.prefHeight(600);
+        root.prefWidth(510);
+        root.translateXProperty().set(-510);
+        root.translateYProperty().set(20);
+
+        Platform.runLater(()->{
+            gameArea.getChildren().add(root);
+
+            initButton.setDisable(true);
+
+            Timeline timeline = new Timeline();
+            KeyValue kv = new KeyValue(root.translateXProperty(), 55, Interpolator.EASE_IN);
+            KeyFrame kf = new KeyFrame(Duration.seconds(1), kv);
+            timeline.getKeyFrames().add(kf);
+
+            timeline.play();
+        });
+
+
+    }
+
 
 
     @FXML
@@ -119,7 +161,9 @@ public class Arena implements Initializable
             return;
         }
         if (this.gameThread == null) {
-            this.gameThread = new Thread(new Game(this, Constants.Player.P1));
+            this.round = 1;
+            this.p1Score=this.p2Score=0;
+            this.gameThread = new Thread(new Game(this, 1));
             Main.running = true;
             Main.paused = false;
             this.startButton.setDisable(true);
@@ -143,7 +187,7 @@ public class Arena implements Initializable
     }
 
     @FXML
-    void stop(final ActionEvent event) throws InterruptedException {
+    void stop() throws InterruptedException {
         if (this.gameThread == null) {
             return;
         }
@@ -155,6 +199,24 @@ public class Arena implements Initializable
         this.startButton.setDisable(false);
         this.pauseButton.setDisable(true);
         this.stopButton.setDisable(true);
+    }
+
+    void startNextRound() throws InterruptedException{
+        this.round=2;
+
+        Main.running = false;
+        Main.paused = false;
+        this.gameThread = null;
+        Thread.sleep(300L);
+        this.clearBoard();
+
+        this.gameThread = new Thread(new Game(this, 2));
+        Main.running = true;
+        Main.paused = false;
+        this.startButton.setDisable(true);
+        this.pauseButton.setDisable(false);
+        this.stopButton.setDisable(false);
+        this.gameThread.start();
     }
 
     void log(final String s) {
@@ -221,6 +283,29 @@ public class Arena implements Initializable
 //                clearCanvas();
 //            }
 //        });
+        logListView.setCellFactory(new Callback<ListView<String>, ListCell<String>>() {
+            @Override
+            public ListCell<String> call(ListView<String> param) {
+                return new ListCell<String>() {
+                    @Override
+                    protected void updateItem(String item, boolean empty) {
+                        super.updateItem(item, empty);
+
+                        if (item == null || empty) {
+                            setText(null);
+                            setStyle("-fx-control-inner-background: " + "#111111" + ";");
+                        } else {
+                            setText(item);
+                            if(item.startsWith("P1"))
+                            setStyle("-fx-control-inner-background: " + "#111111" + ";"+"-fx-text-fill: "+"#d81b60"+";"+"-fx-font-family: 'Press Start 2P Regular';");
+                            else
+                                setStyle("-fx-control-inner-background: " + "#111111" + ";"+"-fx-text-fill: "+"#3377ee"+";"+"-fx-font-family: 'Press Start 2P Regular';");
+
+                        }
+                    }
+                };
+            }
+        });
     }
 
     void clearCanvas(){
@@ -292,12 +377,33 @@ public class Arena implements Initializable
 
         return pathTransition;
     }
+
+    public void setRound1Draw(Pair<Integer, Integer> round1Draw, int winStat) throws IOException {
+        this.round1Draw = round1Draw;
+        this.slideConf(winStat);
+        System.out.println(round1Draw.getKey()+"-"+round1Draw.getValue());
+    }
+
+    public void setRound2Draw(Pair<Integer, Integer> round2Draw,int winStat) throws IOException {
+        this.round2Draw = round2Draw;
+        this.slideConf(winStat);
+        System.out.println(round2Draw.getKey()+"-"+round2Draw.getValue());
+    }
+
+    public Pair<Integer,Integer> getDrawResScores(){
+        return new Pair<>(round1Draw.getKey()+round2Draw.getKey(),round1Draw.getValue()+round2Draw.getValue());
+    }
+
     static class Location {
         double x;
         double y;
     }
 
     public void playerWin(int player,int xi,int yi,int xj,int yj){
+        if(player==1)
+            p1Score++;
+        else
+            p2Score++;
         Animation animation=createPathAnimation(xi,yi,xj,yj,(player== 1)?Color.RED:Color.BLUE);
         animation.play();
     }
