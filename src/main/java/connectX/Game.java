@@ -477,6 +477,7 @@ public class Game implements Runnable{
 
                         updateFilledBoards(xi,yi);
                         final Pair<Boolean,String> p=this.checkTerminalState(currentPlayer,xi,yi);
+                        this.prevPlayer=currentPlayer;
                         if (currentPlayer == Constants.Player.P1) {
                             currentPlayer = Constants.Player.P2;
                         }
@@ -488,7 +489,7 @@ public class Game implements Runnable{
                             Thread.sleep(Players.getPlayers().sleepTime * 1000L);
                             this.preMoveX=xi;
                             this.preMoveY=yi;
-                            this.prevPlayer=currentPlayer;
+
                             continue;
                         }
                         else{
