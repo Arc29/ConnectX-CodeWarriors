@@ -296,7 +296,7 @@ public class WelcomeDash implements Initializable {
     @FXML
     void setXValue(){
         Players.getPlayers().xValue=Integer.parseInt(xSelect.getValue());
-        System.out.println(xSelect.getValue());
+//        System.out.println(xSelect.getValue());
     }
 
     private void log(String message){

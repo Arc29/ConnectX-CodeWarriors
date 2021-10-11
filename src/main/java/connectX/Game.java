@@ -382,36 +382,36 @@ public class Game implements Runnable{
             }
             if (Constants.pythonFileFilter.accept(file)) {
                 command = "python " + file.getName();
-                System.out.println(command);
+               //System.out.println(command);
             }
             try {
                 final Runtime runtime = Runtime.getRuntime();
                 final Process proc = runtime.exec(command, null, file.getParentFile());
                 final BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(proc.getOutputStream()));
                 writer.write(Players.getPlayers().xValue+"\n");
-                System.out.println(Players.getPlayers().xValue);
+                //System.out.println(Players.getPlayers().xValue);
                 writer.write(this.rows+" "+this.cols+"\n");
-                System.out.println(this.rows+" "+this.cols);
+                //System.out.println(this.rows+" "+this.cols);
                 for (int i = 0; i < this.rows; ++i) {
                     for (int j = 0; j < this.cols; ++j) {
-                        System.out.print(this.board[i][j].getValue() + " ");
+                        //System.out.print(this.board[i][j].getValue() + " ");
                         writer.write(this.board[i][j].getValue() + " ");
 
                     }
-                    System.out.println();
+                    //System.out.println();
                     writer.write("\n");
                 }
-                System.out.println(this.prevPlayer.getValue()+" "+this.preMoveX+" "+this.preMoveY);
+                //System.out.println(this.prevPlayer.getValue()+" "+this.preMoveX+" "+this.preMoveY);
                 writer.write(this.prevPlayer.getValue()+" "+this.preMoveX+" "+this.preMoveY+"\n");
                 writer.flush();
 //                System.out.println(((long)Players.getPlayers().player1AllowedTime));
 //                System.out.println(((long)Players.getPlayers().player2AllowedTime));
                 if (proc.waitFor((currentPlayer == Constants.Player.P1) ? ((long)Players.getPlayers().player1AllowedTime) : ((long)Players.getPlayers().player2AllowedTime), TimeUnit.SECONDS)) {
-                    System.out.println(proc.exitValue());
+                    //System.out.println(proc.exitValue());
                     final Scanner output = new Scanner(proc.getInputStream());
                     final Scanner erroutput = new Scanner(proc.getErrorStream());
-                    while(erroutput.hasNext())
-                    System.out.println(erroutput.nextLine());
+//                    while(erroutput.hasNext())
+                    //System.out.println(erroutput.nextLine());
                     int xi = -10;
                     int yi = -10;
                     try {

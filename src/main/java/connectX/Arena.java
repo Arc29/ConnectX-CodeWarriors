@@ -129,8 +129,6 @@ public class Arena implements Initializable
         Platform.runLater(()->{
             gameArea.getChildren().add(root);
 
-            initButton.setDisable(true);
-
             Timeline timeline = new Timeline();
             KeyValue kv = new KeyValue(root.translateXProperty(), 55, Interpolator.EASE_IN);
             KeyFrame kf = new KeyFrame(Duration.seconds(1), kv);
@@ -381,13 +379,13 @@ public class Arena implements Initializable
     public void setRound1Draw(Pair<Integer, Integer> round1Draw, int winStat) throws IOException {
         this.round1Draw = round1Draw;
         this.slideConf(winStat);
-        System.out.println(round1Draw.getKey()+"-"+round1Draw.getValue());
+//        System.out.println(round1Draw.getKey()+"-"+round1Draw.getValue());
     }
 
     public void setRound2Draw(Pair<Integer, Integer> round2Draw,int winStat) throws IOException {
         this.round2Draw = round2Draw;
         this.slideConf(winStat);
-        System.out.println(round2Draw.getKey()+"-"+round2Draw.getValue());
+//        System.out.println(round2Draw.getKey()+"-"+round2Draw.getValue());
     }
 
     public Pair<Integer,Integer> getDrawResScores(){
