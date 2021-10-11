@@ -48,7 +48,12 @@ public class RoundEndDialog implements Initializable {
         else if(this.status==1){
             Pair<Integer,Integer> p=this.arena.getDrawResScores();
             drawResScore.setVisible(true);
-            drawResScore.setText("Draw resolution score: "+p.getKey()+"-"+p.getValue()+". "+"P"+(p.getKey()>p.getValue()?1:2)+" wins!");
+            String resScore="Draw resolution score: "+p.getKey()+"-"+p.getValue()+". ";
+            if(p.getKey()!=p.getValue())
+                resScore+="P"+(p.getKey()>p.getValue()?1:2)+" wins!";
+            else
+                resScore+="Draw again! Manual check required.";
+            drawResScore.setText(resScore);
             this.setStatus(2);
         }
         else {
