@@ -226,11 +226,11 @@ public class WelcomeDash implements Initializable {
             else if (Constants.exeFileFilter.accept(file) || Constants.classFileFilter.accept(file)||Constants.pythonFileFilter.accept(file)) {
                 if (Constants.classFileFilter.accept(file)) {
                     this.updateTime(0,false);
-                    Players.getPlayers().player1Type=1;
+                    Players.getPlayers().player2Type=1;
                 }
                 else if (Constants.pythonFileFilter.accept(file)) {
                     this.updateTime(0,true);
-                    Players.getPlayers().player1Type=2;
+                    Players.getPlayers().player2Type=2;
                 }
                 Players.getPlayers().player2Ready = true;
                 try {
